@@ -1,4 +1,4 @@
-package com.chausov.kotlisp
+package com.chausov.kotlisp.run
 
 import com.chausov.kotlisp.lexer.LispLexer
 import com.chausov.kotlisp.lexer.tokenize
