@@ -2,10 +2,11 @@ package com.chausov.kotlisp
 
 import com.chausov.kotlisp.lexer.LispLexer
 import com.chausov.kotlisp.lexer.tokenize
+import java.io.EOFException
 
 fun lispRead(): String {
     print("> ")
-    val tokens = tokenize(LispLexer(readLine()?:""))
+    val tokens = tokenize(LispLexer(readLine()?: throw EOFException()))
     return tokens.toString()
 }
 
@@ -25,6 +26,8 @@ fun repl() {
     while (true) {
         try {
             rep()
+        } catch (ex: EOFException) {
+            return
         } catch (ex: Exception) {
             System.err.println(ex)
         }
@@ -32,7 +35,7 @@ fun repl() {
 }
 
 fun main(args: Array<String>) {
-    println("Hello, World")
+    println("Kotlisp interpreter")
     repl()
 }
 
