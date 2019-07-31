@@ -1,21 +1,22 @@
 package com.chausov.kotlisp.run
 
-import com.chausov.kotlisp.lexer.LispLexer
-import com.chausov.kotlisp.lexer.tokenize
+import com.chausov.kotlisp.lang.LispType
+import com.chausov.kotlisp.lexer.lispTokenize
+import com.chausov.kotlisp.parser.LispParser
 import java.io.EOFException
 
-fun lispRead(): String {
+fun lispRead(): LispType {
     print("> ")
-    val tokens = tokenize(LispLexer(readLine()?: throw EOFException()))
-    return tokens.toString()
+    val tokens = lispTokenize(readLine() ?: throw EOFException())
+    return LispParser().parse(tokens)
 }
 
-fun lispEval(input: String): String {
-    return input
+fun lispEval(ast: LispType): LispType {
+    return ast
 }
 
-fun lispPrint(input: String) {
-    println(input)
+fun lispPrint(ast: LispType) {
+    println(ast)
 }
 
 fun rep() {
