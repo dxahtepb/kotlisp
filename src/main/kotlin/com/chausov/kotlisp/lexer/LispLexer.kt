@@ -19,16 +19,16 @@ class LispLexer(private val myText: String) : Lexer {
     private var current: Token = advance()
 
     override fun advance(): Token {
-        var nextToken = LispToken(LispTokenTypes.UNKNOWN, "")
+        var nextToken = LispToken(LispTokenTypes.UNKNOWN, "", myPosition)
         if (myPosition >= myText.length) {
-            nextToken = LispToken(LispTokenTypes.getType("EOF"), "")
+            nextToken = LispToken(LispTokenTypes.getType("EOF"), "", myPosition)
         }
         else {
             for ((name, regex) in TOKEN_PATTERNS) {
                 val matchResult = regex.find(myText, myPosition)
                 if (matchResult != null && !matchResult.range.isEmpty() && matchResult.range.first == myPosition) {
+                    nextToken = LispToken(LispTokenTypes.getType(name), myText.substring(matchResult.range), myPosition)
                     myPosition = matchResult.range.last + 1
-                    nextToken = LispToken(LispTokenTypes.getType(name), myText.substring(matchResult.range))
                     break
                 }
             }
