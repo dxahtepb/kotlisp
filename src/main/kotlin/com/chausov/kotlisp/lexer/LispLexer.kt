@@ -1,6 +1,7 @@
 package com.chausov.kotlisp.lexer
 
 import java.util.Collections.unmodifiableMap
+import java.util.stream.Collectors
 
 
 class LispLexer(private val myText: String) : Lexer {
@@ -40,4 +41,10 @@ class LispLexer(private val myText: String) : Lexer {
     override fun peek(): Token = current
 
     override fun hasNext(): Boolean = current.getTokenType() != LispTokenTypes.EOF
+}
+
+fun lispTokenize(text: String): List<Token> {
+    return tokenize(LispLexer(text)).stream()
+        .filter { t: Token -> t.getTokenType() != LispTokenTypes.WHITESPACE }
+        .collect(Collectors.toList())
 }
