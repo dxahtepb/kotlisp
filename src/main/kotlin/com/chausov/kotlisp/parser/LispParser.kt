@@ -1,6 +1,7 @@
 package com.chausov.kotlisp.parser
 
 import com.chausov.kotlisp.lang.LispList
+import com.chausov.kotlisp.lang.LispString
 import com.chausov.kotlisp.lang.LispText
 import com.chausov.kotlisp.lang.LispType
 import com.chausov.kotlisp.lexer.LispTokenTypes
@@ -24,6 +25,7 @@ class LispParser: Parser {
             }
             LispTokenTypes.SYMBOLS -> parseSymbol(reader)
             LispTokenTypes.SPECIAL_CHARACTER -> parseSpecialSymbol(reader)
+            LispTokenTypes.STRING -> parseString(reader)
             else -> parseSymbol(reader)
         }
     }
@@ -66,5 +68,18 @@ class LispParser: Parser {
             null -> throw ParserException("parseSymbol: unexpected token (null)")
             else -> LispText(token.getText())
         }
+    }
+
+    private fun parseString(reader: TokenReader): LispString {
+        val token = reader.peek()
+        reader.advance()
+
+        val tokenText = token?.getText() ?: throw ParserException("parseString: unexpected token (null)")
+
+        if (tokenText.last() != '"') {
+            throw ParserException("parseString: unbalanced string started at ${token.getOffset()}")
+        }
+
+        return LispString(tokenText.substring(1, tokenText.lastIndex - 1))
     }
 }

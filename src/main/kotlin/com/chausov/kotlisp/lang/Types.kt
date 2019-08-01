@@ -1,5 +1,7 @@
 package com.chausov.kotlisp.lang
 
+import org.apache.commons.text.StringEscapeUtils
+
 interface LispType: Type
 
 class LispList: LispType {
@@ -23,5 +25,17 @@ class LispList: LispType {
 class LispText(val text: String): LispType {
     override fun toString(): String {
         return text
+    }
+}
+
+class LispString(text: String) : LispType {
+    private val text: String = unescape(text)
+
+    private fun unescape(str: String): String {
+        return StringEscapeUtils.unescapeJava(str)
+    }
+
+    override fun toString(): String {
+        return "\"$text\""
     }
 }
