@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 class ParserTest {
 
     private fun doTest(text: String, expected: String) {
-        assertEquals(LispParser().parse(lispTokenize(text)).toString(), expected)
+        assertEquals(expected, LispParser().parse(lispTokenize(text)).toString())
     }
 
     @Test
