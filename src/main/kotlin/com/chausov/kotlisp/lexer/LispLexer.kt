@@ -45,6 +45,9 @@ class LispLexer(private val myText: String) : Lexer {
 
 fun lispTokenize(text: String): List<Token> {
     return tokenize(LispLexer(text)).stream()
-        .filter { t: Token -> t.getTokenType() != LispTokenTypes.WHITESPACE }
+        .filter { token: Token ->
+            token.getTokenType() != LispTokenTypes.WHITESPACE
+            && token.getTokenType() != LispTokenTypes.COMMENT
+        }
         .collect(Collectors.toList())
 }
