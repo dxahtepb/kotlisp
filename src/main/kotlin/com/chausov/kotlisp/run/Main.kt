@@ -30,7 +30,7 @@ fun repl() {
         } catch (ex: EOFException) {
             return
         } catch (ex: Exception) {
-            System.err.println(ex)
+            println(ex)
         }
     }
 }
@@ -39,4 +39,3 @@ fun main(args: Array<String>) {
     println("Kotlisp interpreter")
     repl()
 }
-
