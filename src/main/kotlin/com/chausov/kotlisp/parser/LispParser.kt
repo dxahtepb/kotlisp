@@ -80,6 +80,6 @@ class LispParser: Parser {
             throw ParserException("parseString: unbalanced string started at ${token.getOffset()}")
         }
 
-        return LispString(tokenText.substring(1, tokenText.lastIndex - 1))
+        return LispString(tokenText.substring(1, tokenText.length - 1))
     }
 }
