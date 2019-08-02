@@ -20,7 +20,8 @@ class ParserTest {
             "(123 456)" to "(123 456)",
             "(123 456 789)" to "(123 456 789)",
             "( + 2 (* 3 4) )" to "(+ 2 (* 3 4))",
-            "(+ \"abc\" \"abc\")" to "(+ \"abc\" \"abc\")"
+            "(+ \"abc\" \"abc\")" to "(+ \"abc\" \"abc\")",
+            "(+ [1 2 3] [1 [2 3] 4])" to "(+ [1 2 3] [1 [2 3] 4])"
         ).forEach { pair -> doTest(pair.first, pair.second) }
     }
 }

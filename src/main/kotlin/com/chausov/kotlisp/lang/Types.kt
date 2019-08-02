@@ -4,15 +4,26 @@ import org.apache.commons.text.StringEscapeUtils
 
 interface LispType: Type
 
-class LispList: LispType {
-    private val children: MutableList<LispType> = ArrayList()
+open class LispSequence protected constructor() : LispType {
+
+    protected val children: MutableList<LispType> = ArrayList()
 
     fun addChild(child: LispType) {
         children.add(child)
     }
+}
 
-    fun getChildren() = children
+class LispVector: LispSequence() {
+    override fun toString(): String {
+        return children.joinToString(
+            separator=" ",
+            prefix="[",
+            postfix="]"
+        )
+    }
+}
 
+class LispList: LispSequence() {
     override fun toString(): String {
         return children.joinToString(
             separator=" ",

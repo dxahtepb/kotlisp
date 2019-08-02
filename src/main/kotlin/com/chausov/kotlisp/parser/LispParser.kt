@@ -1,9 +1,6 @@
 package com.chausov.kotlisp.parser
 
-import com.chausov.kotlisp.lang.LispList
-import com.chausov.kotlisp.lang.LispString
-import com.chausov.kotlisp.lang.LispText
-import com.chausov.kotlisp.lang.LispType
+import com.chausov.kotlisp.lang.*
 import com.chausov.kotlisp.lexer.LispTokenTypes
 import com.chausov.kotlisp.lexer.Token
 
@@ -32,32 +29,32 @@ class LispParser: Parser {
 
     private fun parseSpecialSymbol(reader: TokenReader): LispType =
         when (reader.peek()?.getText()) {
-            "(" -> parseList(reader)
+            "(" -> parseSequence(reader, ")", LispList())
             ")" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
+            "[" -> parseSequence(reader, "]", LispVector())
+            "]" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
             else -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
         }
 
-    private fun parseList(reader: TokenReader): LispList {
+    private fun parseSequence(reader: TokenReader, endSymbol: String, sequence: LispSequence): LispSequence {
         reader.advance()
 
-        val result = LispList()
         while (true) {
             val form = when (reader.peek()?.getText()) {
                 null -> throw ParserException("parseSpecialSymbol: unexpected token (null)")
-                ")" -> {
+                endSymbol -> {
                     reader.advance()
                     null
                 }
                 else -> parseForm(reader)
             }
             if (form != null) {
-                result.addChild(form)
+                sequence.addChild(form)
             } else {
                 break
             }
         }
-
-        return result
+        return sequence
     }
 
     private fun parseSymbol(reader: TokenReader): LispType {
