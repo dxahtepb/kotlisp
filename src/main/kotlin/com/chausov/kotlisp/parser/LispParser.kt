@@ -33,6 +33,8 @@ class LispParser: Parser {
             ")" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
             "[" -> parseSequence(reader, "]", LispVector())
             "]" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
+            "{" -> parseHashMap(reader, LispHashMap())
+            "}" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
             else -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
         }
 
@@ -47,12 +49,8 @@ class LispParser: Parser {
                     null
                 }
                 else -> parseForm(reader)
-            }
-            if (form != null) {
-                sequence.addChild(form)
-            } else {
-                break
-            }
+            } ?: break
+            sequence.addChild(form)
         }
         return sequence
     }
@@ -78,5 +76,34 @@ class LispParser: Parser {
         }
 
         return LispString(tokenText.substring(1, tokenText.length - 1))
+    }
+
+    private fun parseHashMap(reader: TokenReader, map: LispHashMap): LispHashMap {
+        reader.advance()
+
+        while (true) {
+            val key = when (reader.peek()?.getText()) {
+                null -> throw ParserException("parseHashMap: unexpected token (null)")
+                "}" -> {
+                    reader.advance()
+                    null
+                }
+                else -> parseForm(reader)
+            } ?: break
+            if (key is LispHashable) {
+                val value = when (reader.peek()?.getText()) {
+                    null -> throw ParserException("parseHashMap: unexpected token (null)")
+                    "}" -> {
+                        reader.advance()
+                        null
+                    }
+                    else -> parseForm(reader)
+                } ?: break //todo: add parser warning here
+                map.put(key, value)
+            } else {
+                throw ParserException("parseHashMap: ${key.javaClass.simpleName} cannot be a map key")
+            }
+        }
+        return map
     }
 }
