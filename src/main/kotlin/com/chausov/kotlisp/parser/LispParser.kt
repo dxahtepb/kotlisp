@@ -13,6 +13,7 @@ class LispParser: Parser {
         return parseForm(reader)
     }
 
+    //todo: maybe null is ok here and only means to skip this rep iteration
     private fun parseForm(reader: TokenReader): LispType {
         return when (reader.peek()?.getTokenType()) {
             null -> throw ParserException("parseFrom: unexpected token (null)")
@@ -27,6 +28,7 @@ class LispParser: Parser {
         }
     }
 
+    //todo: cleanup cases for closing symbols
     private fun parseSpecialSymbol(reader: TokenReader): LispType =
         when (reader.peek()?.getText()) {
             "(" -> parseSequence(reader, ")", LispList())
@@ -57,11 +59,13 @@ class LispParser: Parser {
 
     private fun parseSymbol(reader: TokenReader): LispType {
         val token = reader.peek()
-        reader.advance()
-
         return when (token?.getText()?.get(0)) {
             null -> throw ParserException("parseSymbol: unexpected token (null)")
-            else -> LispText(token.getText())
+            ':' -> parseKeyword(reader)
+            else -> {
+                reader.advance()
+                LispText(token.getText())
+            }
         }
     }
 
@@ -105,5 +109,11 @@ class LispParser: Parser {
             }
         }
         return map
+    }
+
+    private fun parseKeyword(reader: TokenReader): LispKeyword {
+        val token = reader.peek() ?: throw ParserException("parseKeyword: unexpected token (null)")
+        reader.advance()
+        return LispKeyword(token.getText().drop(1))
     }
 }

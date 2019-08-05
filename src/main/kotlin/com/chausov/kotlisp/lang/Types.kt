@@ -59,7 +59,7 @@ class LispText(val text: String): LispType {
     }
 }
 
-class LispString(text: String) : LispHashable {
+class LispString(text: String): LispHashable {
     private val text: String = unescape(text)
 
     private fun unescape(str: String): String {
@@ -73,4 +73,14 @@ class LispString(text: String) : LispHashable {
     override fun toString(): String {
         return "\"$text\""
     }
+}
+
+class LispKeyword(private val text: String): LispHashable {
+    fun getText() = text
+
+    override fun hashCode(): Int = text.hashCode()
+
+    override fun equals(other: Any?): Boolean = other is LispKeyword && other.text == text
+
+    override fun toString(): String = ":$text"
 }
