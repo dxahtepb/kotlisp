@@ -29,13 +29,7 @@ class LispList(forwardedChildren: List<LispType>) : LispSequence(forwardedChildr
         )
 }
 
-class LispHashMap: LispType {
-    private val map: MutableMap<LispHashable, LispType> = HashMap()
-
-    fun put(key: LispHashable, value: LispType) {
-        map[key] = value
-    }
-
+class LispHashMap(private val map: Map<LispHashable, LispType>): LispType {
     fun get(key: LispHashable): LispType? = map[key]
 
     override fun toString(): String =

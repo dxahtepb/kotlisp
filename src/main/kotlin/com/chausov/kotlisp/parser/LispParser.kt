@@ -47,7 +47,7 @@ class LispParser: Parser {
         reader.advance()
         while (true) {
             val form = when (reader.peek()?.getText()) {
-                null -> throw ParserException("parseSpecialSymbol: unexpected token (null)")
+                null -> throw ParserException("parseSequence: unexpected token (null)")
                 endSymbol -> {
                     reader.advance()
                     null
@@ -90,33 +90,22 @@ class LispParser: Parser {
     }
 
     private fun parseHashMap(reader: TokenReader): LispHashMap {
-        val map = LispHashMap()
-        reader.advance()
+        val map = HashMap<LispHashable, LispType>()
+        val tokens = parseSequence(reader, "}")
+        if (tokens.size % 2 != 0) throw ParserException("parseHashMap: last key without value")
 
-        while (true) {
-            val key = when (reader.peek()?.getText()) {
-                null -> throw ParserException("parseHashMap: unexpected token (null)")
-                "}" -> {
-                    reader.advance()
-                    null
-                }
-                else -> parseForm(reader)
-            } ?: break
-            if (key is LispHashable) {
-                val value = when (reader.peek()?.getText()) {
-                    null -> throw ParserException("parseHashMap: unexpected token (null)")
-                    "}" -> {
-                        reader.advance()
-                        null
-                    }
-                    else -> parseForm(reader)
-                } ?: break //todo: add parser warning here
-                map.put(key, value)
-            } else {
+        for (i in tokens.indices step 2) {
+            val key = tokens[i]
+            val value = tokens[i + 1]
+            if (key !is LispHashable) {
                 throw ParserException("parseHashMap: ${key.javaClass.simpleName} cannot be a map key")
             }
+            if (map[key] != null) {
+                throw ParserException("parseHashMap: ${key.javaClass.simpleName} duplicate")
+            }
+            map[key] = value
         }
-        return map
+        return LispHashMap(map)
     }
 
     private fun parseKeyword(reader: TokenReader): LispKeyword {
