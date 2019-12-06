@@ -28,15 +28,11 @@ class LispParser: Parser {
         }
     }
 
-    //todo: cleanup cases for closing symbols
     private fun parseSpecialSymbol(reader: TokenReader): LispType =
         when (reader.peek()?.getText()) {
             "(" -> parseSequence(reader, ")", LispList())
-            ")" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
             "[" -> parseSequence(reader, "]", LispVector())
-            "]" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
             "{" -> parseHashMap(reader, LispHashMap())
-            "}" -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
             else -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
         }
 
