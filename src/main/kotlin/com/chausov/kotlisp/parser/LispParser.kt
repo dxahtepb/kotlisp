@@ -60,7 +60,12 @@ class LispParser: Parser {
             ':' -> parseKeyword(reader)
             else -> {
                 reader.advance()
-                LispText(token.getText())
+                val asNumber = token.getText().toBigIntegerOrNull()
+                if (asNumber != null) {
+                    LispNumber(asNumber)
+                } else {
+                    LispSymbol(token.getText())
+                }
             }
         }
     }

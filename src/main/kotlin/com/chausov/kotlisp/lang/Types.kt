@@ -1,12 +1,15 @@
 package com.chausov.kotlisp.lang
 
 import org.apache.commons.text.StringEscapeUtils
+import java.math.BigInteger
 
 interface LispType: Type
 
+interface LispAtom: LispType
+
 open class LispSequence protected constructor() : LispType {
 
-    protected val children: MutableList<LispType> = ArrayList()
+    val children: MutableList<LispType> = ArrayList()
 
     fun addChild(child: LispType) {
         children.add(child)
@@ -53,7 +56,7 @@ class LispHashMap: LispType {
         )
 }
 
-class LispText(val text: String): LispType {
+class LispSymbol(val text: String): LispType {
     override fun toString(): String = text
 }
 
@@ -79,4 +82,18 @@ class LispKeyword(private val text: String): LispHashable {
         other is LispKeyword && other.text == text
 
     override fun toString(): String = ":$text"
+}
+
+class LispNumber(private val number: BigInteger): LispAtom {
+    operator fun plus(other: LispNumber): LispNumber = LispNumber(number + other.number)
+    operator fun minus(other: LispNumber): LispNumber = LispNumber(number - other.number)
+    operator fun times(other: LispNumber): LispNumber = LispNumber(number * other.number)
+    operator fun div(other: LispNumber): LispNumber = LispNumber(number / other.number)
+
+    override fun toString(): String = "$number"
+
+    override fun hashCode(): Int = number.hashCode()
+
+    override fun equals(other: Any?): Boolean =
+        other is LispNumber && other.number == number
 }
