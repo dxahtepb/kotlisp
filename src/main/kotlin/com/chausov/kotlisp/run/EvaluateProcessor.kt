@@ -19,7 +19,7 @@ class LispDefaultEvaluateProcessor {
         }
         return when (first.text) {
             "let*" -> {
-                applyAsFunction(ast, env)
+                let(ast, env)
             }
             "def!" -> {
                 def(ast, env)
@@ -36,6 +36,31 @@ class LispDefaultEvaluateProcessor {
         val symbol = ast.children[1] as LispSymbol
         val value = eval(ast.children[2], env)
         return env.set(symbol, value)
+    }
+
+    //todo: add tests for let* expression (new test type needed)
+    private fun let(ast: LispList, env: Environment): LispType {
+        val childEnv = Environment(env)
+        if (ast.children.size != 3) {
+            throw EvaluationException("Wrong usage of let* construction")
+        }
+
+        val bindings = ast.children[1]
+        val expression = ast.children[2]
+
+        if (bindings !is LispSequence) {
+            throw EvaluationException("let* bindings should be a LispSequence")
+        }
+        if (bindings.children.size % 2 != 0) {
+            throw EvaluationException("let* should have even number of bindings")
+        }
+        for (idx in bindings.children.indices step 2) {
+            val key = bindings.children[idx] as LispSymbol
+            val value = eval(bindings.children[idx + 1], childEnv)
+            childEnv.set(key, value)
+        }
+
+        return eval(expression, childEnv)
     }
 
     private fun applyAsFunction(ast: LispType, env: Environment): LispType {
