@@ -28,13 +28,13 @@ class LispDefaultEvaluateProcessor {
         }
     }
 
-    //todo: add tests for def! expression
+    //todo: add tests for def! expression (new test type needed)
     private fun def(ast: LispList, env: Environment): LispType {
         if (ast.children.size != 3) {
             throw EvaluationException("Wrong usage of def! construction")
         }
         val symbol = ast.children[1] as LispSymbol
-        val value = evaluateAst(ast.children[2], env)
+        val value = eval(ast.children[2], env)
         return env.set(symbol, value)
     }
 
