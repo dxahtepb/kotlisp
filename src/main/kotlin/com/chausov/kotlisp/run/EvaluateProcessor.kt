@@ -49,6 +49,9 @@ class LispDefaultEvaluateProcessor {
             is LispList -> {
                 LispList(ast.children.map { element -> eval(element, env) })
             }
+            is LispVector -> {
+                LispVector(ast.children.map { element -> eval(element, env) })
+            }
             is LispSymbol -> {
                 if (env.containsKey(ast.text)) {
                     ast

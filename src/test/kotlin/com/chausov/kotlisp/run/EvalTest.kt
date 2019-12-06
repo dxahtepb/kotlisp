@@ -33,4 +33,11 @@ class EvalTest {
             "(/ (- (+ 515 (* -87 311)) 296) 27)" to "-994"
         ).forEach { pair -> doTest(pair.first, pair.second) }
     }
+
+    @Test
+    fun testVector() {
+        listOf(
+            "[1 2 (+ 1 2)]" to "[1 2 3]"
+        ).forEach { pair -> doTest(pair.first, pair.second) }
+    }
 }
