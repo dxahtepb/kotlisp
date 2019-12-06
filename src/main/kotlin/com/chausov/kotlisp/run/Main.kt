@@ -12,7 +12,7 @@ fun lispRead(): LispType {
 }
 
 fun lispEval(ast: LispType): LispType {
-    return ast
+    return LispDefaultEvaluateProcessor().eval(ast, ENV)
 }
 
 fun lispPrint(ast: LispType) {

@@ -27,7 +27,12 @@ class LispVector: LispSequence() {
         )
 }
 
-class LispList: LispSequence() {
+class LispList(): LispSequence() {
+
+    constructor(forwardedChildren: List<LispType>) : this() {
+        forwardedChildren.forEach { el -> this.addChild(el) }
+    }
+
     override fun toString(): String =
         children.joinToString(
             separator=" ",
@@ -96,4 +101,10 @@ class LispNumber(private val number: BigInteger): LispAtom, LispHashable {
 
     override fun equals(other: Any?): Boolean =
         other is LispNumber && other.number == number
+}
+
+class LispFunction(private val lambda: (List<LispType>) -> LispType) {
+    fun invoke(vararg args: LispType): LispType = lambda.invoke(args.toList())
+
+    fun invoke(args: List<LispType>): LispType = lambda.invoke(args)
 }
