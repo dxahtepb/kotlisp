@@ -84,7 +84,7 @@ class LispKeyword(private val text: String): LispHashable {
     override fun toString(): String = ":$text"
 }
 
-class LispNumber(private val number: BigInteger): LispAtom {
+class LispNumber(private val number: BigInteger): LispAtom, LispHashable {
     operator fun plus(other: LispNumber): LispNumber = LispNumber(number + other.number)
     operator fun minus(other: LispNumber): LispNumber = LispNumber(number - other.number)
     operator fun times(other: LispNumber): LispNumber = LispNumber(number * other.number)
