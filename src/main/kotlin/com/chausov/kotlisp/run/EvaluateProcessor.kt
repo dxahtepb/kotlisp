@@ -18,12 +18,9 @@ class LispDefaultEvaluateProcessor {
             throw InvocationException("Cannot invoke ${ast.javaClass}")
         }
         return when (first.text) {
-            "let*" -> {
-                builtInLet(ast, env)
-            }
-            "def!" -> {
-                builtInDef(ast, env)
-            }
+            "let*" -> builtInLet(ast, env)
+            "def!" -> builtInDef(ast, env)
+            "do" -> builtInDo(ast, env)
             else -> applyAsFunction(ast, env)
         }
     }
@@ -61,6 +58,12 @@ class LispDefaultEvaluateProcessor {
         }
 
         return eval(expression, childEnv)
+    }
+
+    //todo: add tests for do expression (new test type needed)
+    private fun builtInDo(ast: LispList, env: Environment): LispType {
+        val evaluated = evaluateAst(ast.dropFirst(), env) as LispList
+        return evaluated.children.last()
     }
 
     private fun applyAsFunction(ast: LispType, env: Environment): LispType {

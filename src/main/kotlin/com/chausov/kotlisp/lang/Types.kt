@@ -21,6 +21,8 @@ class LispVector(forwardedChildren: List<LispType>) : LispSequence(forwardedChil
 }
 
 class LispList(forwardedChildren: List<LispType>) : LispSequence(forwardedChildren) {
+    fun dropFirst(): LispList = LispList(children.drop(1))
+
     override fun toString(): String =
         children.joinToString(
             separator=" ",
