@@ -3,7 +3,8 @@ package com.chausov.kotlisp.run
 
 import com.chausov.kotlisp.lang.*
 
-val ENV: Map<String, LispFunction> = hashMapOf(
+// todo: specify function parameters and return type and check it explicitly
+val DEFAULT_ENV: Map<String, LispFunction> = hashMapOf(
     "+" to LispFunction {
             params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber + rhs as LispNumber}
     },
