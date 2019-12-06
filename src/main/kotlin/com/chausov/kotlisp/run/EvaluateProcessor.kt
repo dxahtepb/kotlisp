@@ -46,26 +46,13 @@ class LispDefaultEvaluateProcessor {
 
     private fun evaluateAst(ast: LispType, env: Environment): LispType {
         return when (ast) {
-            is LispList -> {
-                LispList(ast.children.map { element -> eval(element, env) })
-            }
-            is LispVector -> {
-                LispVector(ast.children.map { element -> eval(element, env) })
-            }
-            is LispHashMap -> {
-                LispHashMap(ast.map.mapValues { entry -> eval(entry.value, env) })
-            }
-            is LispSymbol -> {
-                if (env.getOrNull(ast) != null) {
-                    ast
-                } else {
-                    throw NoSuchSymbolException("Unknown symbol ${ast.text}")
-                }
-            }
+            is LispList -> LispList(ast.children.map { element -> eval(element, env) })
+            is LispVector -> LispVector(ast.children.map { element -> eval(element, env) })
+            is LispHashMap -> LispHashMap(ast.map.mapValues { entry -> eval(entry.value, env) })
+            is LispSymbol -> env.get(ast)
             else -> ast
         }
     }
 }
 
-class NoSuchSymbolException(reason: String): Exception(reason)
 class InvocationException(reason: String): Exception(reason)

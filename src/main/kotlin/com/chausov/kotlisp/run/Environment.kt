@@ -16,9 +16,9 @@ class Environment(private val parent: Environment?) {
         env[symbol] = value
     }
 
-    fun getOrNull(symbol: LispSymbol): LispType? = env[symbol] ?: parent?.getOrNull(symbol)
+    private fun getOrNull(symbol: LispSymbol): LispType? = env[symbol] ?: parent?.getOrNull(symbol)
 
-    fun get(symbol: LispSymbol): LispType = getOrNull(symbol) ?: throw EnvironmentNotFoundException(symbol)
+    fun get(symbol: LispSymbol): LispType = getOrNull(symbol) ?: throw SymbolNotFoundException(symbol)
 }
 
 // todo: specify function parameters and return type and check it explicitly
@@ -37,4 +37,4 @@ val DEFAULT_ENV = Environment(mapOf(
     }
 ))
 
-class EnvironmentNotFoundException(env: LispSymbol) : Exception("Environment $env not found")
+class SymbolNotFoundException(symbol: LispSymbol) : Exception("Unknown symbol $symbol")
