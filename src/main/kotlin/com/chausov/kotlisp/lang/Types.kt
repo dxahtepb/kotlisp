@@ -44,6 +44,11 @@ class LispHashMap(val map: Map<LispHashable, LispType>): LispType {
 }
 
 class LispSymbol(val text: String): LispType {
+    override fun hashCode(): Int = text.hashCode()
+
+    override fun equals(other: Any?): Boolean =
+        other is LispSymbol && text == other.text
+
     override fun toString(): String = text
 }
 
@@ -85,7 +90,7 @@ class LispNumber(private val number: BigInteger): LispAtom, LispHashable {
         other is LispNumber && other.number == number
 }
 
-class LispFunction(private val lambda: (List<LispType>) -> LispType) {
+class LispFunction(private val lambda: (List<LispType>) -> LispType) : LispType {
     fun invoke(vararg args: LispType): LispType = lambda.invoke(args.toList())
 
     fun invoke(args: List<LispType>): LispType = lambda.invoke(args)

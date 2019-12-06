@@ -3,48 +3,48 @@ package com.chausov.kotlisp.run
 
 import com.chausov.kotlisp.lang.*
 
-// todo: specify function parameters and return type and check it explicitly
-val DEFAULT_ENV: Map<String, LispFunction> = hashMapOf(
-    "+" to LispFunction {
-            params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber + rhs as LispNumber}
-    },
-    "-" to LispFunction {
-            params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber - rhs as LispNumber}
-    },
-    "*" to LispFunction {
-            params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber * rhs as LispNumber}
-    },
-    "/" to LispFunction {
-            params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber / rhs as LispNumber}
-    }
-)
-
 class LispDefaultEvaluateProcessor {
-    fun eval(ast: LispType, env: Map<String, LispFunction>): LispType {
+    fun eval(ast: LispType, env: Environment): LispType {
         return when (ast) {
             is LispList -> {
                 if (ast.children.isEmpty()) {
                     ast
                 } else {
-                    applyAsFunction(evaluateAst(ast, env), env)
+                    apply(ast, env)
                 }
             }
             else -> evaluateAst(ast, env)
         }
     }
 
-    private fun applyAsFunction(ast: LispType, env: Map<String, LispFunction>): LispType {
-        if (ast is LispList) {
-            val functionName = ast.children.first()
-            val function = env[functionName.toString()]
-            val args = ast.children.subList(1, ast.children.size)
-            return function?.invoke(args)
-                ?: throw InvocationException("Cannot invoke $functionName with arguments $args")
+    private fun apply(ast: LispList, env: Environment): LispType {
+        val first = ast.children.first()
+        if (first !is LispSymbol) {
+            throw InvocationException("Cannot invoke ${ast.javaClass}")
         }
-        throw InvocationException("Cannot invoke ${ast.javaClass}")
+        return when (first.text) {
+            "let*" -> {
+                applyAsFunction(evaluateAst(ast, env), env)
+            }
+            "def!" -> {
+                applyAsFunction(evaluateAst(ast, env), env)
+            }
+            else -> applyAsFunction(evaluateAst(ast, env), env)
+        }
     }
 
-    private fun evaluateAst(ast: LispType, env: Map<String, LispFunction>): LispType {
+    private fun applyAsFunction(ast: LispType, env: Environment): LispType {
+        if (ast !is LispList) {
+            throw InvocationException("Cannot invoke ${ast.javaClass}")
+        }
+        val functionName = ast.children.first() as LispSymbol
+        val function = env.get(functionName) as? LispFunction
+        val args = ast.children.subList(1, ast.children.size)
+        return function?.invoke(args)
+            ?: throw InvocationException("Cannot invoke $functionName with arguments $args")
+    }
+
+    private fun evaluateAst(ast: LispType, env: Environment): LispType {
         return when (ast) {
             is LispList -> {
                 LispList(ast.children.map { element -> eval(element, env) })
@@ -56,7 +56,7 @@ class LispDefaultEvaluateProcessor {
                 LispHashMap(ast.map.mapValues { entry -> eval(entry.value, env) })
             }
             is LispSymbol -> {
-                if (env.containsKey(ast.text)) {
+                if (env.getOrNull(ast) != null) {
                     ast
                 } else {
                     throw NoSuchSymbolException("Unknown symbol ${ast.text}")
