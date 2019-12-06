@@ -6,13 +6,13 @@ import java.util.stream.Collectors
 
 class LispLexer(private val myText: String) : Lexer {
     private companion object Patterns {
-        val TOKEN_PATTERNS: Map<String, Regex> = unmodifiableMap(linkedMapOf(
-            "WHITESPACE" to Regex("[\\s,]+"),
-            "COMMENT" to Regex(";.*"),
-            "TWO_CHARACTER" to Regex("~@"),
-            "SPECIAL_CHARACTER" to Regex("[\\[\\]{}()'`~^@]"),
-            "STRING" to Regex("\"(?:\\\\.|[^\\\\\"])*\"?"),
-            "SYMBOLS" to Regex("[^\\s\\[\\]{}('\"`,;)]+")
+        val TOKEN_PATTERNS: Map<TokenType, Regex> = unmodifiableMap(linkedMapOf(
+            LispTokenTypes.WHITESPACE to Regex("[\\s,]+"),
+            LispTokenTypes.COMMENT to Regex(";.*"),
+            LispTokenTypes.TWO_CHARACTER to Regex("~@"),
+            LispTokenTypes.SPECIAL_CHARACTER to Regex("[\\[\\]{}()'`~^@]"),
+            LispTokenTypes.STRING to Regex("\"(?:\\\\.|[^\\\\\"])*\"?"),
+            LispTokenTypes.SYMBOLS to Regex("[^\\s\\[\\]{}('\"`,;)]+")
         ))
     }
 
@@ -22,13 +22,13 @@ class LispLexer(private val myText: String) : Lexer {
     override fun advance(): Token {
         var nextToken = LispToken(LispTokenTypes.UNKNOWN, "", myPosition)
         if (myPosition >= myText.length) {
-            nextToken = LispToken(LispTokenTypes.getType("EOF"), "", myPosition)
+            nextToken = LispToken(LispTokenTypes.EOF, "", myPosition)
         }
         else {
-            for ((name, regex) in TOKEN_PATTERNS) {
+            for ((tokenType, regex) in TOKEN_PATTERNS) {
                 val matchResult = regex.find(myText, myPosition)
                 if (matchResult != null && !matchResult.range.isEmpty() && matchResult.range.first == myPosition) {
-                    nextToken = LispToken(LispTokenTypes.getType(name), myText.substring(matchResult.range), myPosition)
+                    nextToken = LispToken(tokenType, myText.substring(matchResult.range), myPosition)
                     myPosition = matchResult.range.last + 1
                     break
                 }

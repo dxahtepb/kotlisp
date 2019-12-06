@@ -9,17 +9,4 @@ object LispTokenTypes {
     val TWO_CHARACTER: TokenType = LispTokenType("TWO_CHARACTER")
     val UNKNOWN: TokenType = LispTokenType("UNKNOWN")
     val EOF: TokenType = LispTokenType("EOF")
-
-    fun getType(name: String): TokenType {
-        return when (name) {
-            "SPECIAL_CHARACTER" -> SPECIAL_CHARACTER
-            "WHITESPACE" -> WHITESPACE
-            "STRING" -> STRING
-            "COMMENT" -> COMMENT
-            "SYMBOLS" -> SYMBOLS
-            "TWO_CHARACTER" -> TWO_CHARACTER
-            "EOF" -> EOF
-            else -> UNKNOWN
-        }
-    }
 }
