@@ -40,4 +40,13 @@ class EvalTest {
             "[1 2 (+ 1 2)]" to "[1 2 3]"
         ).forEach { pair -> doTest(pair.first, pair.second) }
     }
+
+    @Test
+    fun testHashMap() {
+        listOf(
+            "{\"a\" (+ 7 8)}" to "{\"a\" 15}",
+            "{:a (+ 7 8)}" to "{:a 15}",
+            "{:a (+ 7 8) :b (+ 3 1)}" to "{:a 15 :b 4}"
+        ).forEach { pair -> doTest(pair.first, pair.second) }
+    }
 }
