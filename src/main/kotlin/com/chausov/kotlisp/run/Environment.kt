@@ -12,8 +12,9 @@ class Environment(private val parent: Environment?) {
         env.putAll(map)
     }
 
-    fun set(symbol: LispSymbol, value: LispType) {
+    fun set(symbol: LispSymbol, value: LispType): LispType {
         env[symbol] = value
+        return value
     }
 
     private fun getOrNull(symbol: LispSymbol): LispType? = env[symbol] ?: parent?.getOrNull(symbol)

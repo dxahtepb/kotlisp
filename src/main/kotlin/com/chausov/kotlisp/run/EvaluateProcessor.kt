@@ -22,10 +22,20 @@ class LispDefaultEvaluateProcessor {
                 applyAsFunction(ast, env)
             }
             "def!" -> {
-                applyAsFunction(ast, env)
+                def(ast, env)
             }
             else -> applyAsFunction(ast, env)
         }
+    }
+
+    //todo: add tests for def! expression
+    private fun def(ast: LispList, env: Environment): LispType {
+        if (ast.children.size != 3) {
+            throw EvaluationException("Wrong usage of def! construction")
+        }
+        val symbol = ast.children[1] as LispSymbol
+        val value = evaluateAst(ast.children[2], env)
+        return env.set(symbol, value)
     }
 
     private fun applyAsFunction(ast: LispType, env: Environment): LispType {
@@ -50,4 +60,5 @@ class LispDefaultEvaluateProcessor {
     }
 }
 
-class InvocationException(reason: String): Exception(reason)
+open class EvaluationException(reason: String) : Exception(reason)
+class InvocationException(reason: String): EvaluationException(reason)
