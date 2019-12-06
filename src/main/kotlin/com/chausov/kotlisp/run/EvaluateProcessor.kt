@@ -4,18 +4,13 @@ package com.chausov.kotlisp.run
 import com.chausov.kotlisp.lang.*
 
 class LispDefaultEvaluateProcessor {
-    fun eval(ast: LispType, env: Environment): LispType {
-        return when (ast) {
-            is LispList -> {
-                if (ast.children.isEmpty()) {
-                    ast
-                } else {
-                    apply(ast, env)
-                }
-            }
-            else -> evaluateAst(ast, env)
+    fun eval(ast: LispType, env: Environment): LispType =
+        if (ast is LispList && ast.children.isNotEmpty()) {
+            apply(ast, env)
         }
-    }
+        else {
+            evaluateAst(ast, env)
+        }
 
     private fun apply(ast: LispList, env: Environment): LispType {
         val first = ast.children.first()
@@ -37,11 +32,10 @@ class LispDefaultEvaluateProcessor {
         if (ast !is LispList) {
             throw InvocationException("Cannot invoke ${ast.javaClass}")
         }
-        val functionName = ast.children.first() as LispSymbol
-        val function = env.get(functionName) as? LispFunction
+        val function = ast.children.first() as? LispFunction
         val args = ast.children.subList(1, ast.children.size)
         return function?.invoke(args)
-            ?: throw InvocationException("Cannot invoke $functionName with arguments $args")
+            ?: throw InvocationException("Cannot invoke $function with arguments $args")
     }
 
     private fun evaluateAst(ast: LispType, env: Environment): LispType {
