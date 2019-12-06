@@ -19,21 +19,22 @@ class LispDefaultEvaluateProcessor {
         }
         return when (first.text) {
             "let*" -> {
-                applyAsFunction(evaluateAst(ast, env), env)
+                applyAsFunction(ast, env)
             }
             "def!" -> {
-                applyAsFunction(evaluateAst(ast, env), env)
+                applyAsFunction(ast, env)
             }
-            else -> applyAsFunction(evaluateAst(ast, env), env)
+            else -> applyAsFunction(ast, env)
         }
     }
 
     private fun applyAsFunction(ast: LispType, env: Environment): LispType {
-        if (ast !is LispList) {
+        val evaluatedAst = evaluateAst(ast, env)
+        if (evaluatedAst !is LispList) {
             throw InvocationException("Cannot invoke ${ast.javaClass}")
         }
-        val function = ast.children.first() as? LispFunction
-        val args = ast.children.subList(1, ast.children.size)
+        val function = evaluatedAst.children.first() as? LispFunction
+        val args = evaluatedAst.children.subList(1, evaluatedAst.children.size)
         return function?.invoke(args)
             ?: throw InvocationException("Cannot invoke $function with arguments $args")
     }
