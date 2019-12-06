@@ -19,17 +19,17 @@ class LispDefaultEvaluateProcessor {
         }
         return when (first.text) {
             "let*" -> {
-                let(ast, env)
+                builtInLet(ast, env)
             }
             "def!" -> {
-                def(ast, env)
+                builtInDef(ast, env)
             }
             else -> applyAsFunction(ast, env)
         }
     }
 
     //todo: add tests for def! expression (new test type needed)
-    private fun def(ast: LispList, env: Environment): LispType {
+    private fun builtInDef(ast: LispList, env: Environment): LispType {
         if (ast.children.size != 3) {
             throw EvaluationException("Wrong usage of def! construction")
         }
@@ -39,7 +39,7 @@ class LispDefaultEvaluateProcessor {
     }
 
     //todo: add tests for let* expression (new test type needed)
-    private fun let(ast: LispList, env: Environment): LispType {
+    private fun builtInLet(ast: LispList, env: Environment): LispType {
         val childEnv = Environment(env)
         if (ast.children.size != 3) {
             throw EvaluationException("Wrong usage of let* construction")
