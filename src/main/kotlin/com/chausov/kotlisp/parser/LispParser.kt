@@ -30,15 +30,21 @@ class LispParser: Parser {
 
     private fun parseSpecialSymbol(reader: TokenReader): LispType =
         when (reader.peek()?.getText()) {
-            "(" -> parseSequence(reader, ")", LispList())
-            "[" -> parseSequence(reader, "]", LispVector())
-            "{" -> parseHashMap(reader, LispHashMap())
+            "(" -> parseList(reader)
+            "[" -> parseVector(reader)
+            "{" -> parseHashMap(reader)
             else -> throw ParserException("parseSpecialSymbol: unexpected token at ${reader.peek()?.getOffset()}")
         }
 
-    private fun parseSequence(reader: TokenReader, endSymbol: String, sequence: LispSequence): LispSequence {
-        reader.advance()
+    private fun parseList(reader: TokenReader): LispList =
+        LispList(parseSequence(reader, ")"))
 
+    private fun parseVector(reader: TokenReader): LispVector =
+        LispVector(parseSequence(reader, "]"))
+
+    private fun parseSequence(reader: TokenReader, endSymbol: String): List<LispType> {
+        val sequence = ArrayList<LispType>()
+        reader.advance()
         while (true) {
             val form = when (reader.peek()?.getText()) {
                 null -> throw ParserException("parseSpecialSymbol: unexpected token (null)")
@@ -48,7 +54,7 @@ class LispParser: Parser {
                 }
                 else -> parseForm(reader)
             } ?: break
-            sequence.addChild(form)
+            sequence.add(form)
         }
         return sequence
     }
@@ -83,7 +89,8 @@ class LispParser: Parser {
         return LispString(tokenText.substring(1, tokenText.length - 1))
     }
 
-    private fun parseHashMap(reader: TokenReader, map: LispHashMap): LispHashMap {
+    private fun parseHashMap(reader: TokenReader): LispHashMap {
+        val map = LispHashMap()
         reader.advance()
 
         while (true) {

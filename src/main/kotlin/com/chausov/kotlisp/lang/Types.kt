@@ -7,18 +7,11 @@ interface LispType: Type
 
 interface LispAtom: LispType
 
-open class LispSequence protected constructor() : LispType {
-
-    val children: MutableList<LispType> = ArrayList()
-
-    fun addChild(child: LispType) {
-        children.add(child)
-    }
-}
+open class LispSequence protected constructor(val children: List<LispType>) : LispType
 
 interface LispHashable: LispType
 
-class LispVector: LispSequence() {
+class LispVector(forwardedChildren: List<LispType>) : LispSequence(forwardedChildren) {
     override fun toString(): String =
         children.joinToString(
             separator=" ",
@@ -27,12 +20,7 @@ class LispVector: LispSequence() {
         )
 }
 
-class LispList(): LispSequence() {
-
-    constructor(forwardedChildren: List<LispType>) : this() {
-        forwardedChildren.forEach { el -> this.addChild(el) }
-    }
-
+class LispList(forwardedChildren: List<LispType>) : LispSequence(forwardedChildren) {
     override fun toString(): String =
         children.joinToString(
             separator=" ",
