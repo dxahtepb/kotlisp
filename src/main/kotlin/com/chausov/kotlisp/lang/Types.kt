@@ -90,8 +90,10 @@ class LispNumber(private val number: BigInteger): LispAtom, LispHashable {
         other is LispNumber && other.number == number
 }
 
-class LispFunction(private val lambda: (List<LispType>) -> LispType) : LispType {
+class LispFunction(private val name: String = "Lambda", private val lambda: (List<LispType>) -> LispType) : LispType {
     fun invoke(vararg args: LispType): LispType = lambda.invoke(args.toList())
 
     fun invoke(args: List<LispType>): LispType = lambda.invoke(args)
+
+    override fun toString(): String = "$<$name>"
 }

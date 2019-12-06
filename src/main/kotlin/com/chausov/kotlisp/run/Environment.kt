@@ -24,16 +24,16 @@ class Environment(private val parent: Environment?) {
 
 // todo: specify function parameters and return type and check it explicitly
 val DEFAULT_ENV = Environment(mapOf(
-    LispSymbol("+") to LispFunction {
+    LispSymbol("+") to LispFunction("operator plus") {
             params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber + rhs as LispNumber }
     },
-    LispSymbol("-") to LispFunction {
+    LispSymbol("-") to LispFunction("operator minus") {
             params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber - rhs as LispNumber}
     },
-    LispSymbol("*") to LispFunction {
+    LispSymbol("*") to LispFunction("operator times") {
             params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber * rhs as LispNumber}
     },
-    LispSymbol("/") to LispFunction {
+    LispSymbol("/") to LispFunction("operator divide") {
             params: List<LispType> -> params.reduce { lhs, rhs -> lhs as LispNumber / rhs as LispNumber}
     }
 ))
