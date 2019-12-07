@@ -65,10 +65,19 @@ class LispDefaultEvaluateProcessor {
 
     private fun bindFunctionArguments(parameters: List<LispSymbol>, args: List<LispType>): Map<LispSymbol, LispType> {
         if (args.size != parameters.size) {
-            throw InvocationException("Wrong number of parameters for function $this")
+            val variadicIdx = parameters.indexOf(VARIADIC)
+            if (variadicIdx == -1) {
+                throw InvocationException("Wrong number of parameters for function $this")
+            } else if (variadicIdx != parameters.lastIndex - 1) {
+                throw InvocationException("Variadic parameter should be last parameter")
+            }
         }
         val bindings: MutableMap<LispSymbol, LispType> = HashMap()
-        for (idx in args.indices) {
+        for (idx in parameters.indices) {
+            if (parameters[idx] == VARIADIC) {
+                bindings[parameters[idx + 1]] = LispList(args.subList(idx, args.size))
+                break
+            }
             bindings[parameters[idx]] = args[idx]
         }
         return bindings

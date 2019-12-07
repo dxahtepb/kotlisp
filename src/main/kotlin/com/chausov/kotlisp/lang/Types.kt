@@ -142,3 +142,5 @@ object LispConstants {
             else -> null
         }
 }
+
+val VARIADIC = LispSymbol("&")
