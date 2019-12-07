@@ -42,7 +42,7 @@ class LispDefaultEvaluateProcessor {
             return eval(thenBranch, env)
         }
         if (elseBranch != null) {
-            eval(elseBranch, env)
+            return eval(elseBranch, env)
         }
         return LispConstants.NIL
     }
