@@ -5,6 +5,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+//todo: introduce ast-based parser tests
 class ParserTest {
 
     private fun doTest(text: String, expected: String) {
@@ -59,5 +60,15 @@ class ParserTest {
             "{\"1\" 1 \"1\" 2}",
             "{:1 1 :1 2}"
         ).forEach { input -> doExceptionTest(input) }
+    }
+
+    @Test
+    fun testConstants() {
+        listOf(
+            "nil" to "nil",
+            "true" to "true",
+            "false" to "false",
+            "(if true 1)" to "(if true 1)"
+        ).forEach { pair -> doTest(pair.first, pair.second) }
     }
 }

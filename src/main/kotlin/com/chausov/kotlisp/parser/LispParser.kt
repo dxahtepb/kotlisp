@@ -21,10 +21,10 @@ class LispParser: Parser {
                 reader.advance()
                 parseForm(reader)
             }
-            LispTokenTypes.SYMBOLS -> parseSymbol(reader)
+            LispTokenTypes.SYMBOLS -> parseAtom(reader)
             LispTokenTypes.SPECIAL_CHARACTER -> parseSpecialSymbol(reader)
             LispTokenTypes.STRING -> parseString(reader)
-            else -> parseSymbol(reader)
+            else -> parseAtom(reader)
         }
     }
 
@@ -59,22 +59,34 @@ class LispParser: Parser {
         return sequence
     }
 
-    private fun parseSymbol(reader: TokenReader): LispType {
+    private fun parseAtom(reader: TokenReader): LispType {
         val token = reader.peek()
         return when (token?.getText()?.get(0)) {
             null -> throw ParserException("parseSymbol: unexpected token (null)")
             ':' -> parseKeyword(reader)
             else -> {
                 reader.advance()
-                val asNumber = token.getText().toBigIntegerOrNull()
-                if (asNumber != null) {
-                    LispNumber(asNumber)
-                } else {
-                    LispSymbol(token.getText())
-                }
+                tryParseAsNumber(token)
+                    ?: tryParseAsConstant(token)
+                    ?: parseAsSymbol(token)
             }
         }
     }
+
+    private fun tryParseAsNumber(token: Token): LispType? {
+        val asNumber = token.getText().toBigIntegerOrNull()
+        if (asNumber != null) {
+            return LispNumber(asNumber)
+        }
+        return null
+    }
+
+    private fun tryParseAsConstant(token: Token): LispType? =
+        LispConstants.getConstantByName(token.toString())
+
+
+    private fun parseAsSymbol(token: Token): LispType =
+        LispSymbol(token.getText())
 
     private fun parseString(reader: TokenReader): LispString {
         val token = reader.peek()

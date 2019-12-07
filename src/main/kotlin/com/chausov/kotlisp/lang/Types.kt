@@ -99,3 +99,23 @@ class LispFunction(private val name: String = "lambda", private val lambda: (Lis
 
     override fun toString(): String = "$<$name>"
 }
+
+class LispConstant(val name: String) : LispType {
+    override fun equals(other: Any?): Boolean = other is LispConstant && other.name == name
+    override fun hashCode(): Int = name.hashCode()
+    override fun toString(): String = name
+}
+
+object LispConstants {
+    val NIL = LispConstant("nil")
+    val TRUE = LispConstant("true")
+    val FALSE = LispConstant("false")
+
+    fun getConstantByName(name: String): LispConstant? =
+        when (name) {
+            "nil" -> NIL
+            "true" -> TRUE
+            "false" -> FALSE
+            else -> null
+        }
+}
