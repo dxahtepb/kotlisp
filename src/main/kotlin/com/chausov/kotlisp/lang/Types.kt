@@ -7,7 +7,19 @@ interface LispType: Type
 
 interface LispAtom: LispType
 
-open class LispSequence protected constructor(val children: List<LispType>) : LispType
+open class LispSequence protected constructor(val children: List<LispType>) : LispType {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as LispSequence
+        if (children != other.children) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return children.hashCode()
+    }
+}
 
 interface LispHashable: LispType
 
@@ -43,6 +55,18 @@ class LispHashMap(val map: Map<LispHashable, LispType>): LispType {
                 entry -> "${entry.key} ${entry.value}"
             }
         )
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as LispHashMap
+        if (map != other.map) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return map.hashCode()
+    }
 }
 
 class LispSymbol(val text: String): LispType {
@@ -78,7 +102,7 @@ class LispKeyword(private val text: String): LispHashable {
     override fun toString(): String = ":$text"
 }
 
-class LispNumber(private val number: BigInteger): LispAtom, LispHashable {
+class LispNumber(val number: BigInteger): LispAtom, LispHashable {
     operator fun plus(other: LispNumber): LispNumber = LispNumber(number + other.number)
     operator fun minus(other: LispNumber): LispNumber = LispNumber(number - other.number)
     operator fun times(other: LispNumber): LispNumber = LispNumber(number * other.number)
