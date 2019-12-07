@@ -50,7 +50,7 @@ val DEFAULT_ENV = Environment(mapOf(
         lispConditionCheck((params.first() as LispList).children.isEmpty())
     },
     LispSymbol("count") to LispFunction("count") { params ->
-        val count = (params.first() as? LispList)?.children?.size?.toBigInteger() ?: BigInteger.ZERO
+        val count = (params.first() as? LispSequence)?.children?.size?.toBigInteger() ?: BigInteger.ZERO
         return@LispFunction LispNumber(count)
     },
     LispSymbol("=") to LispFunction("equals") { params ->
