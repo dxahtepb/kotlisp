@@ -16,7 +16,7 @@ fun lispEval(ast: LispType): LispType {
 }
 
 fun lispPrint(ast: LispType) {
-    println(ast)
+    Printer.printAst(ast)
 }
 
 fun rep() {
