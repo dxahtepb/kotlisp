@@ -22,8 +22,29 @@ class LispDefaultEvaluateProcessor {
             "def!" -> builtInDef(ast, env)
             "do" -> builtInDo(ast, env)
             "fn*" -> builtInFn(ast, env)
+            "if" -> builtInIf(ast, env)
             else -> applyAsFunction(ast, env)
         }
+    }
+
+    private fun builtInIf(ast: LispList, env: Environment): LispType {
+        if (ast.children.size != 3 && ast.children.size != 4) {
+            throw EvaluationException("Wrong usage of if construction")
+        }
+
+        val condition = ast.children[1]
+        val thenBranch = ast.children[2]
+        val elseBranch = ast.children.getOrNull(3)
+
+        val conditionResult = eval(condition, env)
+        if (conditionResult != LispConstants.FALSE
+            && conditionResult != LispConstants.NIL) {
+            return eval(thenBranch, env)
+        }
+        if (elseBranch != null) {
+            eval(elseBranch, env)
+        }
+        return LispConstants.NIL
     }
 
     //todo: add tests for fn* expression (new test type needed)

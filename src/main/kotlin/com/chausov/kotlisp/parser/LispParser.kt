@@ -82,7 +82,7 @@ class LispParser: Parser {
     }
 
     private fun tryParseAsConstant(token: Token): LispType? =
-        LispConstants.getConstantByName(token.toString())
+        LispConstants.getConstantByName(token.getText())
 
 
     private fun parseAsSymbol(token: Token): LispType =
