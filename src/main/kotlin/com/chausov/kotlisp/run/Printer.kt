@@ -4,6 +4,6 @@ import com.chausov.kotlisp.lang.LispType
 
 object Printer {
     fun printAst(ast: LispType) {
-        println(ast)
+        println(ast.toString(true))
     }
 }
