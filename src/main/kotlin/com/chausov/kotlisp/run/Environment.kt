@@ -5,8 +5,8 @@ import com.chausov.kotlisp.lang.LispNumber
 import com.chausov.kotlisp.lang.LispSymbol
 import com.chausov.kotlisp.lang.LispType
 
-class Environment(private val parent: Environment?) {
-    private val env: MutableMap<LispSymbol, LispType> = HashMap()
+open class Environment(private val parent: Environment?) {
+    protected val env: MutableMap<LispSymbol, LispType> = HashMap()
 
     constructor(map: Map<LispSymbol, LispType>) : this(null) {
         env.putAll(map)
@@ -20,6 +20,12 @@ class Environment(private val parent: Environment?) {
     private fun getOrNull(symbol: LispSymbol): LispType? = env[symbol] ?: parent?.getOrNull(symbol)
 
     fun get(symbol: LispSymbol): LispType = getOrNull(symbol) ?: throw SymbolNotFoundException(symbol)
+}
+
+class FunctionEnvironment(parent: Environment, params: Map<LispSymbol, LispType>) : Environment(parent) {
+    init {
+        env.putAll(params)
+    }
 }
 
 // todo: specify function parameters and return type and check it explicitly

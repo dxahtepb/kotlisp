@@ -15,14 +15,42 @@ class LispDefaultEvaluateProcessor {
     private fun apply(ast: LispList, env: Environment): LispType {
         val first = ast.children.first()
         if (first !is LispSymbol) {
-            throw InvocationException("Cannot invoke ${ast.javaClass}")
+            return applyAsFunction(ast, env)
         }
         return when (first.text) {
             "let*" -> builtInLet(ast, env)
             "def!" -> builtInDef(ast, env)
             "do" -> builtInDo(ast, env)
+            "fn*" -> builtInFn(ast, env)
             else -> applyAsFunction(ast, env)
         }
+    }
+
+    //todo: add tests for fn* expression (new test type needed)
+    private fun builtInFn(ast: LispList, env: Environment): LispFunction {
+        if (ast.children.size != 3) {
+            throw EvaluationException("Wrong usage of fn* construction")
+        }
+        val parametersSequence = ast.children[1] as? LispSequence
+            ?: throw EvaluationException("Wrong usage of fn* construction")
+        val parameters = parametersSequence.children.map { e -> e as LispSymbol }
+        val body = ast.children[2]
+        return LispFunction { args ->
+            val bindings = bindFunctionArguments(parameters, args)
+            val newEnv = FunctionEnvironment(env, bindings)
+            return@LispFunction eval(body, newEnv)
+        }
+    }
+
+    private fun bindFunctionArguments(parameters: List<LispSymbol>, args: List<LispType>): Map<LispSymbol, LispType> {
+        if (args.size != parameters.size) {
+            throw InvocationException("Wrong number of parameters for function $this")
+        }
+        val bindings: MutableMap<LispSymbol, LispType> = HashMap()
+        for (idx in args.indices) {
+            bindings[parameters[idx]] = args[idx]
+        }
+        return bindings
     }
 
     //todo: add tests for def! expression (new test type needed)
@@ -69,10 +97,10 @@ class LispDefaultEvaluateProcessor {
     private fun applyAsFunction(ast: LispType, env: Environment): LispType {
         val evaluatedAst = evaluateAst(ast, env)
         if (evaluatedAst !is LispList) {
-            throw InvocationException("Cannot invoke ${ast.javaClass}")
+            throw InvocationException("Cannot invoke ${ast.javaClass.simpleName}")
         }
         val function = evaluatedAst.children.first() as? LispFunction
-        val args = evaluatedAst.children.subList(1, evaluatedAst.children.size)
+        val args = evaluatedAst.dropFirst().children
         return function?.invoke(args)
             ?: throw InvocationException("Cannot invoke $function with arguments $args")
     }
