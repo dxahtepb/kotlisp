@@ -7,8 +7,7 @@ class LispDefaultEvaluateProcessor {
     fun eval(ast: LispType, env: Environment): LispType =
         if (ast is LispList && ast.children.isNotEmpty()) {
             apply(ast, env)
-        }
-        else {
+        } else {
             evaluateAst(ast, env)
         }
 
@@ -38,7 +37,8 @@ class LispDefaultEvaluateProcessor {
 
         val conditionResult = eval(condition, env)
         if (conditionResult != LispConstants.FALSE
-            && conditionResult != LispConstants.NIL) {
+            && conditionResult != LispConstants.NIL
+        ) {
             return eval(thenBranch, env)
         }
         if (elseBranch != null) {
@@ -147,4 +147,4 @@ class LispDefaultEvaluateProcessor {
 }
 
 open class EvaluationException(reason: String) : Exception(reason)
-class InvocationException(reason: String): EvaluationException(reason)
+class InvocationException(reason: String) : EvaluationException(reason)

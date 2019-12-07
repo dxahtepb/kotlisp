@@ -4,7 +4,7 @@ import com.chausov.kotlisp.lang.*
 import com.chausov.kotlisp.lexer.LispTokenTypes
 import com.chausov.kotlisp.lexer.Token
 
-class LispParser: Parser {
+class LispParser : Parser {
     override fun parse(tokens: Iterable<Token>): LispType {
         return parse(TokenReader(tokens))
     }

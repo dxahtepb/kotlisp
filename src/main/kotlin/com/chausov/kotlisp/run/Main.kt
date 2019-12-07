@@ -29,9 +29,11 @@ fun rep(env: Environment) {
 }
 
 fun repl() {
-    val env = preRunCommands(listOf(
-        "(def! not (fn* (a) (if a false true)))"
-    ))
+    val env = preRunCommands(
+        listOf(
+            "(def! not (fn* (a) (if a false true)))"
+        )
+    )
     while (true) {
         try {
             rep(env)

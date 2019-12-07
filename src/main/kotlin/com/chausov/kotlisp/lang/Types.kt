@@ -3,11 +3,11 @@ package com.chausov.kotlisp.lang
 import org.apache.commons.text.StringEscapeUtils
 import java.math.BigInteger
 
-interface LispType: Type {
+interface LispType : Type {
     fun toString(readable: Boolean): String = toString()
 }
 
-interface LispAtom: LispType
+interface LispAtom : LispType
 
 open class LispSequence protected constructor(val children: List<LispType>) : LispType {
     override fun equals(other: Any?): Boolean {
@@ -22,15 +22,15 @@ open class LispSequence protected constructor(val children: List<LispType>) : Li
     }
 }
 
-interface LispHashable: LispType
+interface LispHashable : LispType
 
 class LispVector(forwardedChildren: List<LispType>) : LispSequence(forwardedChildren) {
     override fun toString(): String = toString(true)
     override fun toString(readable: Boolean): String =
         children.joinToString(
-            separator=" ",
-            prefix="[",
-            postfix="]"
+            separator = " ",
+            prefix = "[",
+            postfix = "]"
         ) { token -> token.toString(readable) }
 }
 
@@ -40,13 +40,13 @@ class LispList(forwardedChildren: List<LispType>) : LispSequence(forwardedChildr
     override fun toString(): String = toString(true)
     override fun toString(readable: Boolean): String =
         children.joinToString(
-            separator=" ",
-            prefix="(",
-            postfix=")"
+            separator = " ",
+            prefix = "(",
+            postfix = ")"
         ) { token -> token.toString(readable) }
 }
 
-class LispHashMap(val map: Map<LispHashable, LispType>): LispType {
+class LispHashMap(val map: Map<LispHashable, LispType>) : LispType {
     fun get(key: LispHashable): LispType? = map[key]
 
     override fun toString(): String = toString(true)
@@ -70,7 +70,7 @@ class LispHashMap(val map: Map<LispHashable, LispType>): LispType {
     }
 }
 
-class LispSymbol(val text: String): LispType {
+class LispSymbol(val text: String) : LispType {
     override fun hashCode(): Int = text.hashCode()
 
     override fun equals(other: Any?): Boolean =
@@ -79,7 +79,7 @@ class LispSymbol(val text: String): LispType {
     override fun toString(): String = text
 }
 
-class LispString(text: String): LispHashable {
+class LispString(text: String) : LispHashable {
     private val text: String = unescape(text)
 
     private fun unescape(str: String): String = StringEscapeUtils.unescapeJava(str)
@@ -94,7 +94,7 @@ class LispString(text: String): LispHashable {
         if (readable) "\"${escape(text)}\"" else "\"text\""
 }
 
-class LispKeyword(private val text: String): LispHashable {
+class LispKeyword(private val text: String) : LispHashable {
     fun getText(): String = text
 
     override fun hashCode(): Int = text.hashCode()
@@ -105,7 +105,7 @@ class LispKeyword(private val text: String): LispHashable {
     override fun toString(): String = ":$text"
 }
 
-class LispNumber(val number: BigInteger): LispAtom, LispHashable {
+class LispNumber(val number: BigInteger) : LispAtom, LispHashable {
     operator fun plus(other: LispNumber): LispNumber = LispNumber(number + other.number)
     operator fun minus(other: LispNumber): LispNumber = LispNumber(number - other.number)
     operator fun times(other: LispNumber): LispNumber = LispNumber(number * other.number)
@@ -122,8 +122,7 @@ class LispNumber(val number: BigInteger): LispAtom, LispHashable {
 class LispFunction(
     private val name: String = "lambda",
     private val lambda: (List<LispType>) -> LispType
-) : LispType
-{
+) : LispType {
     fun invoke(vararg args: LispType): LispType = lambda.invoke(args.toList())
 
     fun invoke(args: List<LispType>): LispType = lambda.invoke(args)

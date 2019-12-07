@@ -6,14 +6,16 @@ import java.util.stream.Collectors
 
 class LispLexer(private val myText: String) : Lexer {
     private companion object Patterns {
-        val TOKEN_PATTERNS: Map<TokenType, Regex> = unmodifiableMap(linkedMapOf(
-            LispTokenTypes.WHITESPACE to Regex("[\\s,]+"),
-            LispTokenTypes.COMMENT to Regex(";.*"),
-            LispTokenTypes.TWO_CHARACTER to Regex("~@"),
-            LispTokenTypes.SPECIAL_CHARACTER to Regex("[\\[\\]{}()'`~^@]"),
-            LispTokenTypes.STRING to Regex("\"(?:\\\\.|[^\\\\\"])*\"?"),
-            LispTokenTypes.SYMBOLS to Regex("[^\\s\\[\\]{}('\"`,;)]+")
-        ))
+        val TOKEN_PATTERNS: Map<TokenType, Regex> = unmodifiableMap(
+            linkedMapOf(
+                LispTokenTypes.WHITESPACE to Regex("[\\s,]+"),
+                LispTokenTypes.COMMENT to Regex(";.*"),
+                LispTokenTypes.TWO_CHARACTER to Regex("~@"),
+                LispTokenTypes.SPECIAL_CHARACTER to Regex("[\\[\\]{}()'`~^@]"),
+                LispTokenTypes.STRING to Regex("\"(?:\\\\.|[^\\\\\"])*\"?"),
+                LispTokenTypes.SYMBOLS to Regex("[^\\s\\[\\]{}('\"`,;)]+")
+            )
+        )
     }
 
     private var myPosition: Int = 0
@@ -23,8 +25,7 @@ class LispLexer(private val myText: String) : Lexer {
         var nextToken = LispToken(LispTokenTypes.UNKNOWN, "", myPosition)
         if (myPosition >= myText.length) {
             nextToken = LispToken(LispTokenTypes.EOF, "", myPosition)
-        }
-        else {
+        } else {
             for ((tokenType, regex) in TOKEN_PATTERNS) {
                 val matchResult = regex.find(myText, myPosition)
                 if (matchResult != null && !matchResult.range.isEmpty() && matchResult.range.first == myPosition) {
@@ -47,7 +48,7 @@ fun lispTokenize(text: String): List<Token> {
     return tokenize(LispLexer(text)).stream()
         .filter { token: Token ->
             token.getTokenType() != LispTokenTypes.WHITESPACE
-            && token.getTokenType() != LispTokenTypes.COMMENT
+                    && token.getTokenType() != LispTokenTypes.COMMENT
         }
         .collect(Collectors.toList())
 }
