@@ -10,8 +10,7 @@ interface LispAtom: LispType
 open class LispSequence protected constructor(val children: List<LispType>) : LispType {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-        other as LispSequence
+        if (other !is LispSequence) return false
         if (children != other.children) return false
         return true
     }
