@@ -1,1 +1,1 @@
-java -jar ./target/kotlisp-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar ./build/libs/kotlisp-1.0-SNAPSHOT.jar
