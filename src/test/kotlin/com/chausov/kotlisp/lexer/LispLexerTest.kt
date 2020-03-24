@@ -33,7 +33,9 @@ class LispLexerTest(private val testDataDir: String) {
 
     private fun tokenizeLispCode(src: String): String {
         val builder = StringBuilder()
-        tokenize(LispLexer(src)).forEach { token: Token -> builder.append(token.toString()).append("\n") }
+        tokenize(LispLexer(src)).forEach { token: Token ->
+            builder.append(token.toString()).append(System.lineSeparator())
+        }
         return builder.toString()
     }
 
