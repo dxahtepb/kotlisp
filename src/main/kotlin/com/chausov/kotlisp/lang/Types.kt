@@ -13,8 +13,7 @@ open class LispSequence protected constructor(val children: List<LispType>) : Li
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is LispSequence) return false
-        if (children != other.children) return false
-        return true
+        return children == other.children
     }
 
     override fun hashCode(): Int {
@@ -61,8 +60,7 @@ class LispHashMap(val map: Map<LispHashable, LispType>) : LispType {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
         other as LispHashMap
-        if (map != other.map) return false
-        return true
+        return map == other.map
     }
 
     override fun hashCode(): Int {

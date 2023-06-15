@@ -7,7 +7,7 @@ import java.io.EOFException
 
 fun lispRead(): LispType {
     print("> ")
-    val str = readLine() ?: throw EOFException()
+    val str = readlnOrNull() ?: throw EOFException()
     return lispParse(str)
 }
 

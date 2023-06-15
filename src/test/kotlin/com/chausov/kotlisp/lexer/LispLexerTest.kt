@@ -27,6 +27,7 @@ class LispLexerTest(private val testDataDir: String) {
 
     private fun readFile(relativePath: String): String {
         val fileUrl = this::class.java.getResource(relativePath)
+                ?: throw IllegalStateException("Resource $relativePath not found")
         assertNotNull(fileUrl)
         return File(fileUrl.file).bufferedReader().readText()
     }
