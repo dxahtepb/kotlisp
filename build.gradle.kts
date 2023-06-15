@@ -4,15 +4,12 @@
 
 plugins {
     java
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.8.20"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven {
-        setUrl("http://repo.maven.apache.org/maven2")
-    }
 }
 
 dependencies {
@@ -29,9 +26,10 @@ description = "Kotlisp"
 
 tasks.jar {
     manifest {
-        attributes(
-                "Main-Class" to "com.chausov.kotlisp.run.MainKt"
-        )
+        attributes["Main-Class"] = "com.chausov.kotlisp.run.MainKt"
     }
-    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+    configurations["compileClasspath"].forEach { file: File ->
+        from(zipTree(file.absoluteFile))
+    }
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
